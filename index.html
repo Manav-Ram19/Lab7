@@ -85,6 +85,16 @@
       // the writeup to view the URL pattern for fetch one and fetch all
       function fetchAll() {
         // TODO
+        document.getElementById("output").textContent = "";
+        document.getElementById("recordForm").style.display = "none";
+        document.getElementById("recordIDcontainer").style.display = "none";
+        let url = document.getElementById("endpoint").value;
+        fetch(url)
+          .then(response => {if(response.ok) {return response.json();} else {throw new Error('404 Error');}})
+            .then(data => document.getElementById("output").textContent = JSON.stringify(data))
+            .catch(function (error) {
+                  document.getElementById("output").textContent = error;
+                });
       }
 
       // This function should fetch one entry from the given endpoint.
@@ -93,22 +103,87 @@
       // the writeup to view the URL pattern for fetch one and fetch all
       function fetchOne() {
         // TODO
+        document.getElementById("output").textContent = "";
+        document.getElementById("recordForm").style.display = "none";
+        document.getElementById("recordIDcontainer").style.display = "none";
+        let id = window.prompt("Enter record id", "");
+        let url = document.getElementById("endpoint").value + "/" + id;
+        fetch(url)
+          .then(response => {if(response.ok) {return response.json();} else {throw new Error('404 Error');}})
+            .then(data => printOne(data))
+            .catch(function(err) {
+                document.getElementById("output").textContent = err;
+              });
+        function printOne(data) {
+          document.getElementById("output").textContent = JSON.stringify(data);
+        }
       }
 
       // This function should use fetch to create one entry in the given endpoint.
       // From the 4 CRUD actions, this is the CREATE action, and uses the POST http method.
       // The main difference from updateRecord() will be the URL you send data to; check
       // the writeup to view the URL pattern for create and update
-      function createRecord() {
+      function createRecord(action) {
         // TODO
+        document.getElementById("output").textContent = "";
+        if(action == 'show') {
+          document.getElementById("recordIDcontainer").style.display = "none";
+          document.getElementById("recordForm").style.display = "block";
+          document.getElementById("title").value = "";
+          document.getElementById("author").value = "";
+        }
+        else {
+          let url = document.getElementById("endpoint").value;
+          fetch(url, {
+              method: 'post',
+              headers: {
+                "Content-type": 'application/json'
+              },
+              body: JSON.stringify({"title": document.getElementById('title').value, "author": document.getElementById('author').value})
+            })
+            .then(response => {if(response.ok) {return response.json();} else {throw new Error('404 Error');}})
+              .then(data => outputData(data))
+              .catch(function (error) {
+                  document.getElementById("output").textContent = error;
+                });
+          }
+        function outputData(data) {
+          document.getElementById("output").textContent = JSON.stringify(data);
+        }
       }
 
       // This function should use fetch to update one existing entry in the given endpoint.
       // From the 4 CRUD actions, this is the UPDATE action, and uses the PUT http method.
       // The main difference from createRecord() will be the URL you send data to; check
       // the writeup to view the URL pattern for create and update
-      function updateRecord() {
+      function updateRecord(action) {
         // TODO
+        document.getElementById("output").textContent = "";
+        if(action == 'show') {
+          document.getElementById("recordIDcontainer").style.display = "block";
+          document.getElementById("recordForm").style.display = "block";
+          document.getElementById("title").value = "";
+          document.getElementById("author").value = "";
+          document.getElementById("recordID").value = "";
+        }
+        else {
+          let url = document.getElementById("endpoint").value + "/" + document.getElementById("recordID").value;
+          fetch(url, {
+              method: 'put',
+              headers: {
+                "Content-type": 'application/json'
+              },
+              body: JSON.stringify({"title": document.getElementById('title').value, "author": document.getElementById('author').value})
+            })
+            .then(response => {if(response.ok) {return response.json();} else {throw new Error('404 Error');}})
+              .then(data => outputData(data))
+              .catch(function (error) {
+                  document.getElementById("output").textContent = error;
+                });
+          }
+        function outputData(data) {
+          document.getElementById("output").textContent = JSON.stringify(data);
+        }
       }
 
       // This function should use fetch to delete one existing entry in the given endpoint.
@@ -118,6 +193,25 @@
       // delete all, only delete one.
       function deleteRecord() {
         // TODO
+        document.getElementById("output").textContent = "";
+        document.getElementById("recordForm").style.display = "none";
+        document.getElementById("recordIDcontainer").style.display = "none";
+        let id = window.prompt("Enter record id", "");
+        let url = document.getElementById("endpoint").value + "/" + id;
+        fetch(url, {
+          method: 'delete',
+          headers: {
+                "Content-type": 'application/json'
+          }
+        })
+          .then(response => {if(response.ok) {return response.json();} else {throw new Error('404 Error');}})
+            .then(data => printOne(data))
+            .catch(function(err) {
+                document.getElementById("output").textContent = err;
+              });
+        function printOne(data) {
+          document.getElementById("output").textContent = JSON.stringify(data);
+        }
       }
 
       window.addEventListener('DOMContentLoaded', () => {
